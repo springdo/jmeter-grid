@@ -1,0 +1,26 @@
+{{- if .Values.agent.enabled }}
+{{ $values := .Values }}
+{{- range $i, $replica := until ( int .Values.agent.replicas ) }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jmeter-agent-{{ $values.appName }}
+  labels:
+    app: jmeter-agent-{{ $values.appName }}
+spec:
+  clusterIP: None
+  ports:
+    - port: 1099
+      name: jmeter
+      targetPort: 1099
+    - port: 50000
+      name: rmi
+      targetPort: 50000
+    - port: 4445
+      name: stoptest
+      targetPort: 4445
+  selector:
+    app: jmeter-agent-{{ $values.appName }}
+{{- end }}
+{{- end }}

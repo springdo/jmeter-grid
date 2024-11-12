@@ -1,0 +1,31 @@
+{{- if .Values.prime.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jmeter-prime-{{ .Values.appName }}
+spec:
+  replicas: {{ .Values.prime.replicas }}
+  selector:
+    matchLabels:
+      app: jmeter-prime-{{ .Values.appName }}
+  template:
+    metadata:
+      labels:
+        app: jmeter-prime-{{ .Values.appName }}
+    spec:
+      containers:
+      - name: {{ .Values.appName }}
+        image: {{  .Values.prime.image }}
+        resources:
+          requests:
+            cpu: {{ .Values.prime.resources.requests.cpu }}
+            memory: {{ .Values.prime.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.prime.resources.limits.cpu }}
+            memory: {{ .Values.prime.resources.limits.memory }}
+        env:
+        - name: JVM_ARGS
+          value: "-Xms{{ .Values.prime.minMemoryLimit }} -Xmx{{ .Values.prime.maxMemoryLimit }}"
+        args: ["sh", "-c", "echo 'Apache JMeter Master has started successfully and running' && jmeter --version && tail -f ./jmeter.log"]
+{{- end }}

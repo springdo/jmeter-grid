@@ -1,0 +1,29 @@
+appName: abc
+
+agent:
+  enabled: true
+  replicas: 3
+  image: docker.io/rbillon59/jmeter-k8s-base:5.6.3
+  resources:      
+    requests:
+      cpu: 200m
+      memory: 1024Mi
+    limits:
+      cpu: 512m
+      memory: 1248Mi
+  minMemoryLimit: 1g
+  maxMemoryLimit: 1g
+
+
+prime:
+  enabled: false
+  image: docker.io/rbillon59/jmeter-k8s-base:5.6.3
+  resources:
+    requests:
+      cpu: 200m
+      memory: 1024Mi
+    limits:
+      cpu: 512m
+      memory: 1248Mi
+  minMemoryLimit: 1g
+  maxMemoryLimit: 1g
