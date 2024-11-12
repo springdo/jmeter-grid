@@ -27,3 +27,7 @@ prime:
       memory: 1248Mi
   minMemoryLimit: 1g
   maxMemoryLimit: 1g
+
+pvc:
+  storageClassName: trident
+  size: 2Gi

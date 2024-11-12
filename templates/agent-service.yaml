@@ -5,9 +5,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: jmeter-agent-{{ $values.appName }}
+  name: jmeter-agent-{{ $i }}-{{ $values.appName }}
   labels:
-    app: jmeter-agent-{{ $values.appName }}
+    app: jmeter-agent-{{ $i }}-{{ $values.appName }}
 spec:
   clusterIP: None
   ports:
@@ -21,6 +21,6 @@ spec:
       name: stoptest
       targetPort: 4445
   selector:
-    app: jmeter-agent-{{ $values.appName }}
+    app: jmeter-agent-{{ $i }}-{{ $values.appName }}
 {{- end }}
 {{- end }}

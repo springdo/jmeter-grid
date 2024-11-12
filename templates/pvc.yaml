@@ -8,5 +8,5 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 2Gi
-  storageClassName: trident
+      storage: {{ .Values.pvc.size }}
+  storageClassName:  {{ .Values.pvc.storageClassName }}
