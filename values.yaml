@@ -29,5 +29,5 @@ prime:
   maxMemoryLimit: 1g
 
 pvc:
-  storageClassName: trident
+  storageClassName: trident-storage-class
   size: 2Gi

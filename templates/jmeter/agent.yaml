@@ -19,7 +19,7 @@ spec:
       containers:
       - name: jmeter-agent-{{ $values.appName }}
         image: {{  $values.agent.image }}
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         env:
         - name: JVM_ARGS
           value: "-Xms{{ $values.agent.minMemoryLimit }} -Xmx{{ $values.agent.maxMemoryLimit }}"

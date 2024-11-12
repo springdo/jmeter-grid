@@ -1,0 +1,21 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: run-jmeter
+spec:
+  params:
+    - name: TEST_DIR
+      type: string
+      description: "Directory containing test files"
+  workspaces:
+    - name: data-workspace
+      description: "Workspace for test data"
+      mountPath: /data
+  steps:
+    - name: run-shell
+      image: rbillon59/jmeter-k8s-base:5.6.3
+      script: |
+        #!/usr/bin/env sh
+        set -xe
+        
+        cd /data/$(params.TEST_DIR)
