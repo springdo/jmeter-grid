@@ -46,6 +46,7 @@ spec:
       workingDir: $(workspaces.source.path)
       script: |
         #!/usr/bin/env sh
+
         set -xe
         ls $(workspaces.source.path)
         echo "🧹 Cleaning up left over bits 🧹"
@@ -55,9 +56,11 @@ spec:
         rm -rf ${R_DIR}
         rm -rf ${T_DIR}/jmeter.log
         mkdir -p ${R_DIR}
+        export AGENT_LIST=""
+        x=1; while  [ $x -le $(params.JMETER_AGENTS) ]; do AGENT_LIST+="jmeter-agent-$x-$(params.APP_NAME_SUFFIX)," $(( x++ )); done
 
         echo "🏃‍♀️ Running the Jmeter shizzles 🧪"
-
+        echo "Agent List :: ${AGENT_LIST}" 
         jmeter -Dlog_level.jmeter=DEBUG -n -t ${T_DIR}/$(params.TEST_DIR)/*.jmx -l ${T_DIR}/HelloWorld.jtl -j ${T_DIR}/jmeter.log -Dserver.rmi.localport=1099 -Dserver_port=1099 -Jserver.rmi.ssl.disable=true -Jjmeter.reportgenerator.temp_dir=/tmp -R jmeter-agent-0-avc -e -o ${R_DIR}
 
         echo "==== jmeter.log ===="
