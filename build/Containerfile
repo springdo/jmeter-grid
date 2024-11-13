@@ -13,7 +13,7 @@ ARG JMETER_PLUGIN_PATH="${JMETER_INSTALLATION_PATH}/lib/ext/jmeter-plugin-manage
 ## Installing dependencies
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y wget coreutils unzip bash curl git jq
+    apt-get install -y wget coreutils unzip bash curl git jq vim
 
 # Installing jmeter clean and link
 RUN mkdir /opt/jmeter && \

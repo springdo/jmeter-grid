@@ -19,7 +19,7 @@
       </ThreadGroup>
       <hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request">
-          <stringProp name="HTTPSampler.domain">my-jukebox-ai-user3.apps.cluster-5vbcm.5vbcm.sandbox692.opentlc.com</stringProp>
+          <stringProp name="HTTPSampler.domain">my-swagger-ui-mickey-mouse.apps.ocp-dev.ptsb.internal</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>

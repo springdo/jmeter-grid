@@ -8,18 +8,68 @@ spec:
       type: string
       description: "Directory containing test files"
       default: "TestPlans"
+    # - name: USER_PARAMS
+    #   type: string
+    #   description: "Additional Prams (passed as a string to the executor)"
+    #   default: ""
+    # - name: JMETER_COMMAND
+    #   type: string
+    #   description: "Additional Prams (passed as a string to the executor)"
+    #   default: ""
+    - name: JMETER_AGENTS
+      type: string
+      description: "number of static agents to use (3)"
+      default: 3
+    - name: APP_NAME_SUFFIX
+      type: string
+      description: "Suffix to add to the agent deployments, defaults to abc"
+      default: "abc"
+    - default: 'docker.io/lachlanevenson/k8s-helm@sha256:5c792f29950b388de24e7448d378881f68b3df73a7b30769a6aa861061fd08ae'
+      description: Specify a specific helm image
+      name: helm_image
+      type: string
+
+  steps:
+    - image: $(params.helm_image)
+      name: install-jmeter-grid
+      resources: {}
+      script: |
+        set -xe
+        ls $(workspaces.source.path)
+
+        echo "Installing / upgrading the grid"
+        helm upgrade --install $(params.APP_NAME_SUFFIX) --set appName=$(params.APP_NAME_SUFFIX)
+      workingDir: $(workspaces.source.path)/chart
+
+    - name: run-jmeter
+      image: quay.io/springdo/jmeter:5.6.3
+      workingDir: $(workspaces.source.path)
+      script: |
+        #!/usr/bin/env sh
+        set -xe
+        ls $(workspaces.source.path)
+        echo "🧹 Cleaning up left over bits 🧹"
+        export T_DIR=/data/jmeter-grid
+        export R_DIR=${T_DIR}/report
+        rm -rf ${T_DIR}/HelloWorld.jtl
+        rm -rf ${R_DIR}
+        rm -rf ${T_DIR}/jmeter.log
+        mkdir -p ${R_DIR}
+
+        echo "🏃‍♀️ Running the Jmeter shizzles 🧪"
+
+        jmeter -Dlog_level.jmeter=DEBUG -n -t ${T_DIR}/$(params.TEST_DIR)/*.jmx -l ${T_DIR}/HelloWorld.jtl -j ${T_DIR}/jmeter.log -Dserver.rmi.localport=1099 -Dserver_port=1099 -Jserver.rmi.ssl.disable=true -Jjmeter.reportgenerator.temp_dir=/tmp -R jmeter-agent-0-avc -e -o ${R_DIR}
+
+        echo "==== jmeter.log ===="
+        cat ${T_DIR}/jmeter.log
+
+        echo "==== Raw Test Report ===="
+        cat ${T_DIR}/*.jtl
+
+        echo "==== HTML Test Report ===="
+        echo "See HTML test report in ${R_DIR}/index.html"
+
   workspaces:
     - name: data-workspace
       description: "Workspace for test data"
       mountPath: /data
-  steps:
-    - name: run-shell
-      image: quay.io/springdo/jmeter:5.6.3
-      script: |
-        #!/usr/bin/env sh
-        set -xe
-        
-        # ls /data/$(params.TEST_DIR)
-        ls /data/
-
-        sleep 360

@@ -1,9 +1,10 @@
-appName: abc
+appName: abc #changes to this based on pipeline to deploy things?
 
 agent:
   enabled: true
   replicas: 3
-  image: docker.io/rbillon59/jmeter-k8s-base:5.6.3
+  image: quay.io/springdo/jmeter:5.6.3
+  # image: docker.io/rbillon59/jmeter-k8s-base:5.6.3
   resources:      
     requests:
       cpu: 200m

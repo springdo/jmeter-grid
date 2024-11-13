@@ -10,11 +10,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: jmeter-agent-{{ $values.appName }}
+      app: jmeter-agent-{{ $i }}-{{ $values.appName }}
   template:
     metadata:
       labels:
-        app: jmeter-agent-{{ $values.appName }}
+        app: jmeter-agent-{{ $i }}-{{ $values.appName }}
     spec:
       containers:
       - name: jmeter-agent-{{ $values.appName }}
@@ -25,8 +25,8 @@ spec:
           value: "-Xms{{ $values.agent.minMemoryLimit }} -Xmx{{ $values.agent.maxMemoryLimit }}"
         - name: MODE
           value: "SLAVE"
-        command: ["/bin/bash"]
-        args: ["-c", "trap 'exit 0' SIGUSR1 && while true; do sleep 30;done"]
+        command: ["/bin/bash", "-c"]
+        args: ["cd /tmp && sh -c 'tail -F /tmp/jmeter-server.log >> /dev/stdout &' ; jmeter-server -Dserver.rmi.localport=50000 -Dserver_port=1099 -Jserver.rmi.ssl.disable=true"]
         ports:
         - containerPort: 1099
         - containerPort: 50000
