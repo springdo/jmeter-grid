@@ -1,0 +1,32 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: helm-deploy
+spec:
+  params:
+    - default: .
+      description: The context directory within the source
+      name: CONTEXT_DIR
+      type: string
+    - description: for example --set appName=blah
+      name: VALUES_OVERRIDES
+      type: string
+    - default: abc
+      description: 'Suffix to add to the agent deployments, defaults to abc'
+      name: APP_NAME_SUFFIX
+      type: string
+  steps:
+    - image: 'quay.io/redhat-cop/tool-box:latest'
+      name: bash-command
+      resources: {}
+      script: |
+        set -xe
+        ls $(workspaces.source.path)
+ 
+        echo "Installing / upgrading the grid"
+        helm upgrade --install $(params.APP_NAME_SUFFIX) --set appName=$(params.APP_NAME_SUFFIX) $(params.VALUES_OVERRIDES) chart
+      securityContext:
+        runAsUser: 0
+      workingDir: $(workspaces.source.path)/$(params.CONTEXT_DIR)
+  workspaces:
+    - name: source

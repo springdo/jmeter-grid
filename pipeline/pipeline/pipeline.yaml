@@ -1,0 +1,80 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: jmeter-test
+spec:
+  tasks:
+    - name: git-clone
+      params:
+        - name: url
+          value: 'https://github.com/springdo/jmeter-grid.git'
+        - name: revision
+          value: ''
+        - name: refspec
+          value: ''
+        - name: submodules
+          value: 'true'
+        - name: depth
+          value: '1'
+        - name: sslVerify
+          value: 'true'
+        - name: crtFileName
+          value: ca-bundle.crt
+        - name: subdirectory
+          value: ''
+        - name: sparseCheckoutDirectories
+          value: ''
+        - name: deleteExisting
+          value: 'true'
+        - name: httpProxy
+          value: ''
+        - name: httpsProxy
+          value: ''
+        - name: noProxy
+          value: ''
+        - name: verbose
+          value: 'true'
+        - name: gitInitImage
+          value: 'registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:66f219b4d54a41b945cb5715ecd1fbb5d25431cf8dad4b06914a4cdc65b298cc'
+        - name: userHome
+          value: /home/git
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: source
+    - name: helm-deploy
+      params:
+        - name: CONTEXT_DIR
+          value: .
+        - name: VALUES_OVERRIDES
+          value: ' '
+        - name: APP_NAME_SUFFIX
+          value: abc
+      runAfter:
+        - git-clone
+      taskRef:
+        kind: Task
+        name: helm-deploy
+      workspaces:
+        - name: source
+          workspace: source
+    - name: run-jmeter
+      params:
+        - name: TEST_DIR
+          value: TestPlans
+        - name: JMETER_AGENTS
+          value: '3'
+        - name: APP_NAME_SUFFIX
+          value: abc
+      runAfter:
+        - helm-deploy
+      taskRef:
+        kind: Task
+        name: run-jmeter
+      workspaces:
+        - name: source
+          workspace: source
+  workspaces:
+    - name: source
