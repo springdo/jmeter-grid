@@ -3,11 +3,27 @@ kind: Pipeline
 metadata:
   name: jmeter-test
 spec:
+  params:
+    - default: abc
+      description: suffix for deployments eg jmeter-agents-N-APP_NAME
+      name: APP_NAME
+      type: string
+    - default: 'false'
+      description: clearn up or reuse a grid of agents
+      name: STATIC
+      type: string
+    - default: '3'
+      description: number of agents to launch
+      name: JMETER_AGENTS
+      type: string
+    - default: 'https://github.com/springdo/jmeter-grid.git'
+      name: GIT_REPO
+      type: string
   tasks:
     - name: git-clone
       params:
         - name: url
-          value: 'https://github.com/springdo/jmeter-grid.git'
+          value: $(params.GIT_REPO)
         - name: revision
           value: ''
         - name: refspec
@@ -50,8 +66,10 @@ spec:
           value: .
         - name: VALUES_OVERRIDES
           value: ' '
-        - name: APP_NAME_SUFFIX
-          value: abc
+        - name: APP_NAME
+          value: $(params.APP_NAME)
+        - name: JMETER_AGENTS
+          value: $(params.JMETER_AGENTS)
       runAfter:
         - git-clone
       taskRef:
@@ -65,9 +83,9 @@ spec:
         - name: TEST_DIR
           value: TestPlans
         - name: JMETER_AGENTS
-          value: '3'
-        - name: APP_NAME_SUFFIX
-          value: abc
+          value: $(params.JMETER_AGENTS)
+        - name: APP_NAME
+          value: $(params.APP_NAME)
       runAfter:
         - helm-deploy
       taskRef:
@@ -76,5 +94,19 @@ spec:
       workspaces:
         - name: source
           workspace: source
+    - name: helm-remove
+      params:
+        - name: APP_NAME
+          value: $(params.APP_NAME)
+      runAfter:
+        - run-jmeter
+      taskRef:
+        kind: Task
+        name: helm-remove
+      when:
+        - input: $(params.STATIC)
+          operator: in
+          values:
+            - 'false'
   workspaces:
     - name: source

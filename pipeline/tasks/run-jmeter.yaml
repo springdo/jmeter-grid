@@ -14,7 +14,7 @@ spec:
       type: string
     - default: abc
       description: 'Suffix to add to the agent deployments, defaults to abc'
-      name: APP_NAME_SUFFIX
+      name: APP_NAME
       type: string
   steps:
     - computeResources: {}
@@ -22,8 +22,9 @@ spec:
       name: run-jmeter
       script: |
         #!/bin/bash
+        set -xe
 
-        echo "\U0001F9F9 Cleaning up left over bits \U0001F9F9"
+        echo "\n\n  \U0001F9F9 Cleaning up left over bits \U0001F9F9"
         export T_DIR=/data/
         export R_DIR=${T_DIR}/report
 
@@ -36,19 +37,19 @@ spec:
         echo "Copy test files to thh mount"
         cp -vr $(workspaces.source.path)/$(params.TEST_DIR) /data/
 
-        echo "\U0001F3C3‍♀️ Running the Jmeter shizzles \U0001F9EA"        
+        echo "\n\n \U0001F3C3‍♀️ Running the Jmeter shizzles \U0001F9EA"        
         export AGENT_LIST=""
-        let x=0; while  [ $x -le $(params.JMETER_AGENTS) ]; do AGENT_LIST+="jmeter-agent-$x-$(params.APP_NAME_SUFFIX),"; let x++; done
+        let x=0; while  [ $x -le $(params.JMETER_AGENTS) ]; do AGENT_LIST+="jmeter-agent-$x-$(params.APP_NAME),"; let x++; done
         echo "Agent List :: ${AGENT_LIST}" 
         jmeter -Dlog_level.jmeter=DEBUG -n -t ${T_DIR}/$(params.TEST_DIR)/*.jmx -l ${T_DIR}/HelloWorld.jtl -j ${T_DIR}/jmeter.log -Dserver.rmi.localport=1099 -Dserver_port=1099 -Jserver.rmi.ssl.disable=true -Jjmeter.reportgenerator.temp_dir=/tmp -R ${AGENT_LIST} -e -o ${R_DIR}
 
-        echo "==== jmeter.log ===="
+        echo "\n\n ==== jmeter.log ===="
         cat ${T_DIR}/jmeter.log
 
-        echo "==== Raw Test Report ===="
+        echo "\n\n ==== Raw Test Report ===="
         cat ${T_DIR}/*.jtl
 
-        echo "==== HTML Test Report ===="
+        echo "\n\n ==== HTML Test Report ===="
         echo "See HTML test report in ${R_DIR}/index.html"
         ls ${R_DIR}
       volumeMounts:
@@ -58,7 +59,7 @@ spec:
   volumes:
     - name: test-data
       persistentVolumeClaim:
-        claimName: jmeter-pvc-abc
+        claimName: jmeter-pvc-$(params.APP_NAME)
   workspaces:
     - description: Workspace from git clone
       name: source

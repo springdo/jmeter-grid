@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: helm-remove
+spec:
+  params:
+    - default: abc
+      description: 'Suffix to add to the agent deployments, defaults to abc'
+      name: APP_NAME
+      type: string
+  steps:
+    - image: 'quay.io/redhat-cop/tool-box:latest'
+      name: bash-command
+      resources: {}
+      script: |
+        set -xe 
+        echo "Removing the grid"
+        helm uninstall $(params.APP_NAME)
