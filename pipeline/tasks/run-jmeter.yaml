@@ -22,7 +22,7 @@ spec:
       name: run-jmeter
       script: |
         #!/bin/bash
-        set -xe
+        set -x
 
         echo "\n\n  \U0001F9F9 Cleaning up left over bits \U0001F9F9"
         export T_DIR=/data/
@@ -39,7 +39,7 @@ spec:
 
         echo "\n\n \U0001F3C3‍♀️ Running the Jmeter shizzles \U0001F9EA"        
         export AGENT_LIST=""
-        let x=0; while  [ $x -le $(params.JMETER_AGENTS) ]; do AGENT_LIST+="jmeter-agent-$x-$(params.APP_NAME),"; let x++; done
+        let x=0; while  [ $x -lt $(params.JMETER_AGENTS) ]; do AGENT_LIST+="jmeter-agent-$x-$(params.APP_NAME),"; let x++; done
         echo "Agent List :: ${AGENT_LIST}" 
         jmeter -Dlog_level.jmeter=DEBUG -n -t ${T_DIR}/$(params.TEST_DIR)/*.jmx -l ${T_DIR}/HelloWorld.jtl -j ${T_DIR}/jmeter.log -Dserver.rmi.localport=1099 -Dserver_port=1099 -Jserver.rmi.ssl.disable=true -Jjmeter.reportgenerator.temp_dir=/tmp -R ${AGENT_LIST} -e -o ${R_DIR}
 

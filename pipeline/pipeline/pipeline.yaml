@@ -5,11 +5,11 @@ metadata:
 spec:
   params:
     - default: abc
-      description: suffix for deployments eg jmeter-agents-N-APP_NAME
+      description: suffix (eg abc) for deployments results in deploy of jmeter-agents-N-APP_NAME
       name: APP_NAME
       type: string
     - default: 'false'
-      description: clearn up or reuse a grid of agents
+      description: clearn up or reuse a grid of agents. false to be dynamic, true to reuse static grid
       name: STATIC
       type: string
     - default: '3'
