@@ -3,13 +3,26 @@ kind: Pipeline
 metadata:
   name: jmeter-test
 spec:
+  finally:
+    - name: helm-clean-up
+      params:
+        - name: APP_NAME
+          value: $(params.APP_NAME)
+      taskRef:
+        kind: Task
+        name: helm-remove
+      when:
+        - input: $(params.STATIC)
+          operator: in
+          values:
+            - 'false'
   params:
     - default: abc
-      description: suffix (eg abc) for deployments results in deploy of jmeter-agents-N-APP_NAME
+      description: suffix for deployments eg jmeter-agents-N-APP_NAME
       name: APP_NAME
       type: string
     - default: 'false'
-      description: clearn up or reuse a grid of agents. false to be dynamic, true to reuse static grid
+      description: clearn up or reuse a grid of agents
       name: STATIC
       type: string
     - default: '3'
@@ -51,7 +64,8 @@ spec:
         - name: verbose
           value: 'true'
         - name: gitInitImage
-          value: 'registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:66f219b4d54a41b945cb5715ecd1fbb5d25431cf8dad4b06914a4cdc65b298cc'
+          value: >-
+            registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:66f219b4d54a41b945cb5715ecd1fbb5d25431cf8dad4b06914a4cdc65b298cc
         - name: userHome
           value: /home/git
       taskRef:
@@ -94,19 +108,5 @@ spec:
       workspaces:
         - name: source
           workspace: source
-    - name: helm-remove
-      params:
-        - name: APP_NAME
-          value: $(params.APP_NAME)
-      runAfter:
-        - run-jmeter
-      taskRef:
-        kind: Task
-        name: helm-remove
-      when:
-        - input: $(params.STATIC)
-          operator: in
-          values:
-            - 'false'
   workspaces:
     - name: source
