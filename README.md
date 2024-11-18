@@ -41,3 +41,7 @@ tkn pipeline start jmeter-test -w name=source,claimName=jmeter-runs
 * add plugins and test data to the image and test further examples
 * params on the script 
 * triggers on the build
+
+### 🔨 ISSUES
+* On cleanup, if the PipelineRun still exists which references a PV created as part of the execution, then it gets stuck in terminating. Remove the P.Run to fix this.
+
