@@ -16,6 +16,10 @@ spec:
       description: 'Suffix to add to the agent deployments, defaults to abc'
       name: APP_NAME
       type: string
+    - default: '-Jparams.host=example.com -Jparams.num_threads=50'
+      description: string of custom params to supply to jmeter cli eg -Jparams.host=example.com -Jthing=stuff
+      name: JMETER_PARAMS
+      type: string
   steps:
     - computeResources: {}
       image: 'quay.io/springdo/jmeter:5.6.3'
@@ -41,7 +45,7 @@ spec:
         export AGENT_LIST=""
         let x=0; while  [ $x -lt $(params.JMETER_AGENTS) ]; do AGENT_LIST+="jmeter-agent-$x-$(params.APP_NAME),"; let x++; done
         echo "Agent List :: ${AGENT_LIST}" 
-        jmeter -Dlog_level.jmeter=DEBUG -n -t ${T_DIR}/$(params.TEST_DIR)/*.jmx -l ${T_DIR}/HelloWorld.jtl -j ${T_DIR}/jmeter.log -Dserver.rmi.localport=1099 -Dserver_port=1099 -Jserver.rmi.ssl.disable=true -Jjmeter.reportgenerator.temp_dir=/tmp -R ${AGENT_LIST} -e -o ${R_DIR}
+        jmeter -Dlog_level.jmeter=DEBUG -n -t ${T_DIR}/$(params.TEST_DIR)/*.jmx -l ${T_DIR}/HelloWorld.jtl -j ${T_DIR}/jmeter.log -Dserver.rmi.localport=1099 -Dserver_port=1099 -Jserver.rmi.ssl.disable=true -Jjmeter.reportgenerator.temp_dir=/tmp $(params.JMETER_PARAMS) -R ${AGENT_LIST} -e -o ${R_DIR}
 
         echo "\n\n ==== jmeter.log ===="
         cat ${T_DIR}/jmeter.log

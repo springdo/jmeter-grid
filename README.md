@@ -39,9 +39,16 @@ tkn pipeline start jmeter-test -w name=source,claimName=jmeter-runs
 
 ### What's next?
 * add plugins and test data to the image and test further examples
-* params on the script 
+* params on the script (jmeter ones that is)
 * triggers on the build
+
+### Playing with Jmeter
+with jmeter installed, you can run the example test plan using the following 
+```bash
+export JMETER_TRASH=/tmp/jmeter
+rm -rf ${JMETER_TRASH} && mkdir -p ${JMETER_TRASH}
+jmeter -Dlog_level.jmeter=DEBUG -n -t ${PWD}/TestPlans/*.jmx -l ${JMETER_TRASH}/HelloWorld.jtl -j ${JMETER_TRASH}/jmeter.log -Jjmeter.reportgenerator.temp_dir=${JMETER_TRASH} -Jparams.host=en.wikipedia.org -Jparams.num_threads=50 -e -o ${JMETER_TRASH}/report
+```
 
 ### 🔨 ISSUES
 * On cleanup, if the PipelineRun still exists which references a PV created as part of the execution, then it gets stuck in terminating. Remove the P.Run to fix this.
-
