@@ -8,12 +8,15 @@ spec:
       description: The context directory within the source
       name: CONTEXT_DIR
       type: string
-    - description: for example --set appName=blah
+    - description: for example --set something=blah
       name: VALUES_OVERRIDES
       type: string
     - default: abc
       description: 'Suffix to add to the agent deployments, defaults to abc'
       name: APP_NAME
+      type: string
+    - description: number of agents to launch
+      name: JMETER_AGENTS
       type: string
   steps:
     - image: 'quay.io/redhat-cop/tool-box:latest'
@@ -23,16 +26,15 @@ spec:
         ls $(workspaces.source.path)
  
         echo "Installing / upgrading the grid"
-        helm upgrade --install $(params.APP_NAME) --set appName=$(params.APP_NAME) $(params.VALUES_OVERRIDES) chart
+        helm upgrade --install $(params.APP_NAME) --set appName=$(params.APP_NAME) --set agent.replicas=$(params.JMETER_AGENTS) $(params.VALUES_OVERRIDES) chart
       securityContext:
         runAsUser: 0
       workingDir: $(workspaces.source.path)/$(params.CONTEXT_DIR)
     - image: 'quay.io/openshift/origin-cli:4.12'
       name: verify
       script: |
-        #!/bin/sh
-        echo "verify the deployment by checking the deployments have happended..."
-        echo "NOTE - lazy mode only checking one deployement [deployment/jmeter-agent-0-$(params.APP_NAME)]"
-        oc rollout status --timeout=2m deployment/jmeter-agent-0-$(params.APP_NAME)
+        #!/bin/bash
+        let x=0; while [ $x -lt $(params.JMETER_AGENTS) ]; do oc rollout status --timeout=2m deployment/jmeter-agent-$x-$(params.APP_NAME); let x++; done
+        # oc rollout status --timeout=2m deployment/jmeter-agent-0-$(params.APP_NAME)
   workspaces:
     - name: source
