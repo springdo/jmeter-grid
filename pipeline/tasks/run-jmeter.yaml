@@ -16,8 +16,8 @@ spec:
       description: 'Suffix to add to the agent deployments, defaults to abc'
       name: APP_NAME
       type: string
-    - default: '-Jparams.host=example.com -Jparams.num_threads=50'
-      description: string of custom params to supply to jmeter cli eg -Jparams.host=example.com -Jthing=stuff
+    - default: '-Gparams.host=example.com -Gparams.num_threads=50'
+      description: string of custom params to supply to jmeter cli eg -Gparams.host=example.com -Gthing=stuff
       name: JMETER_PARAMS
       type: string
   steps:
