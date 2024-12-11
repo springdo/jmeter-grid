@@ -1,7 +1,8 @@
 # "borrowed" from here https://github.com/Rbillon59/jmeter-k8s-base/blob/master/Dockerfile 🫠
 
-FROM openjdk:16-slim
-		
+FROM openjdk:17-slim
+# FROM registry.access.redhat.com/ubi9/openjdk-17
+
 ARG JMETER_VERSION=5.6.3
 ARG JMETER_INSTALLATION_PATH="/opt/jmeter/apache-jmeter-${JMETER_VERSION}" 
 ARG CURL_OPTS="--connect-timeout 10     --retry 5     --retry-delay 1     --retry-max-time 60" 
@@ -42,6 +43,11 @@ RUN curl ${CURL_OPTS} --location --output "${JMETER_PLUGIN_PATH}" "${JMETER_PLUG
     java -classpath "${JMETER_PLUGIN_PATH}" org.jmeterplugins.repository.PluginManagerCMDInstaller 
 
 RUN curl ${CURL_OPTS} --location --output "${JMETER_INSTALLATION_PATH}/lib/jolokia-java-agent.jar"  "https://search.maven.org/remotecontent?filepath=org/jolokia/jolokia-jvm/1.7.2/jolokia-jvm-1.7.2.jar"
+# RUN ./$JMETER_HOME/bin/PluginsManagerCMD.sh install mqmeter=2.1.0 
+RUN curl ${CURL_OPTS} --location --output "${JMETER_INSTALLATION_PATH}/lib/ext/com.ibm.mq.allclient-9.3.0.0.jar"  "https://search.maven.org/remotecontent?filepath=com/ibm/mq/com.ibm.mq.allclient/9.3.0.0/com.ibm.mq.allclient-9.3.0.0.jar"
+RUN curl ${CURL_OPTS} --location --output "${JMETER_INSTALLATION_PATH}/lib/ext/json-lib-2.4-jdk15.jar"  "http://search.maven.org/remotecontent?filepath=net/sf/json-lib/json-lib/2.4/json-lib-2.4-jdk15.jar"
+RUN curl ${CURL_OPTS} --location --output "${JMETER_INSTALLATION_PATH}/lib/ext/javax.jms-api-2.0.1.jar"  "http://search.maven.org/remotecontent?filepath=javax/jms/javax.jms-api/2.0.1/javax.jms-api-2.0.1.jar"
+RUN curl ${CURL_OPTS} --location --output "${JMETER_INSTALLATION_PATH}/lib/ext/json-20240303.jar"  "http://search.maven.org/remotecontent?filepath=org/json/json/20240303/json-20240303.jar"
 
 ## Setting users &&  directory and right
 RUN mkdir /report &&  \

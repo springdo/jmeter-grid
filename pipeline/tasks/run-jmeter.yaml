@@ -22,7 +22,7 @@ spec:
       type: string
   steps:
     - computeResources: {}
-      image: 'quay.io/springdo/jmeter:5.6.3'
+      image: 'quay.io/springdo/jmeter:5.6.3-openjdk-17'
       name: run-jmeter
       script: |
         #!/bin/bash

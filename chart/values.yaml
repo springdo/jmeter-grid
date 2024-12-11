@@ -3,7 +3,7 @@ appName: abc #changes to this based on pipeline to deploy things?
 agent:
   enabled: true
   replicas: 3
-  image: quay.io/springdo/jmeter:5.6.3
+  image: quay.io/springdo/jmeter:5.6.3-openjdk-17
   # image: docker.io/rbillon59/jmeter-k8s-base:5.6.3
   resources:      
     requests:
@@ -14,7 +14,7 @@ agent:
       memory: 1248Mi
   minMemoryLimit: 1g
   maxMemoryLimit: 1g
-
+  # keystore: sitauto-client-tls-bau-sit
 
 prime:
   enabled: false
