@@ -1,0 +1,16 @@
+FROM grafana/xk6
+
+ENV CGO_ENABLED=1
+ENV XK6_RACE_DETECTOR=1
+
+# TODO - check dep if needed 
+
+
+RUN wget "https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/messaging/mqdev/redist/9.4.0.6-IBM-MQC-Redist-LinuxX64.tar.gz" -O /tmp/9.4.0.6-IBM-MQC-Redist-LinuxX64.tar.gz
+# RUN mkdir -p /usr/local/9.4.0.6-IBM-MQC-Redist-LinuxX64 
+# RUN tar --no-same-owner -xzf /tmp/9.4.0.6-IBM-MQC-Redist-LinuxX64.tar.gz -C /usr/local/9.4.0.6-IBM-MQC-Redist-LinuxX64 
+RUN tar --no-same-owner -xzf /tmp/9.4.0.6-IBM-MQC-Redist-LinuxX64.tar.gz  -C /tmp/
+RUN chmod 755 /tmp/bin/* && \
+    export PATH=$PATH:/usr/tmp/bin/
+
+RUN xk6 build --with github.com/iambaim/xk6-ibmmq@latest
